@@ -15,7 +15,7 @@ class BookRemoteDatasource {
       final docs = data['docs'] as List;
       return docs.map((json) => BookModel.fromJson(json)).toList();
     } else {
-      throw Exception('Failed to load books');
+      throw Exception('Failed to load books: ${response.statusCode}');
     }
   }
 }

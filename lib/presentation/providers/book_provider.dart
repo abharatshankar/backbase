@@ -15,6 +15,7 @@ class BookProvider extends ChangeNotifier {
 
   Future<void> searchBooks(String query, {bool isRefresh = false}) async {
     if (isLoading && !isRefresh) return;
+    
     isLoading = true;
     errorMessage = '';
     if (isRefresh) {
@@ -23,21 +24,28 @@ class BookProvider extends ChangeNotifier {
       hasMore = true;
     }
     notifyListeners();
+    
     try {
       final results = await repository.searchBooks(query, currentPage);
       if (results.isEmpty) {
         hasMore = false;
         if (books.isEmpty) {
-          errorMessage = 'No books found locally or remotely.';
+          errorMessage = 'No books found.';
         }
       }
       books.addAll(results);
       currentPage++;
     } catch (e) {
-      errorMessage = 'Failed to load books: ${e.toString()}';
+      errorMessage = e.toString();
+      if (errorMessage.contains('Network error')) {
+        errorMessage = 'Check your internet connection and try again.';
+      } else if (errorMessage.contains('No books found')) {
+        errorMessage = 'No books found. Try a different search term.';
+      }
       books = [];
       hasMore = false;
     }
+    
     isLoading = false;
     notifyListeners();
   }
