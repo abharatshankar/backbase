@@ -2,10 +2,17 @@ import 'package:backbase/data/datasources/book_local_datasource.dart';
 import 'package:backbase/data/models/book_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   late BookLocalDatasource datasource;
   late Database db;
+
+  setUpAll(() async {
+    // Initialize sqflite for testing
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  });
 
   setUp(() async {
     // Use in-memory database for testing
